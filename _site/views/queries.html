@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>FrankSu's work</title>
+
+    <script type="text/javascript">
+        var colorSelected = "#eeffee";
+        var colorUnselected = "#ffffff";
+        var colorMouseOver = "#eeeeff";
+        var indexAndType;
+        var indexArray = new Array();
+        var queryIndexes = new Array();
+        var queryTypes = new Array();
+        function loadIndexAndType() {
+            var tableIndexAndType = document.getElementById("tableIndexAndType");
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    var responseText = xmlhttp.responseText;
+                    indexAndType = JSON.parse(responseText);
+                    document.getElementById("responsetext").innerHTML=responseText;
+                    for (var key in indexAndType) {
+                        if (indexAndType.hasOwnProperty(key)) {
+
+                            // add a new row into the table of indexes and types;
+                            var newRow = document.createElement("tr");
+                            newRow.style.backgroundColor = "#ffffff";
+                            tableIndexAndType.appendChild(newRow);
+                            // add a new cell of index;
+                            var newCell1 = document.createElement("td");
+                            newRow.appendChild(newCell1);
+                            var pIndex = document.createElement("p");
+                            pIndex.id=key;
+                            newCell1.appendChild(pIndex);
+                            pIndex.appendChild(document.createTextNode(key));
+                            pIndex.onclick = function(){ onPClick(this, queryIndexes) };
+
+                            // add a new cell of index;
+                            var newCell2 = document.createElement("td");
+                            newRow.appendChild(newCell2);
+
+                            var index = indexAndType[key];
+                            var mappingArray = new Array();
+                            for (var keyMap in index["mappings"]) {
+                                mappingArray.push(keyMap);
+
+                                var pType = document.createElement("p");
+                                newCell2.appendChild(pType);
+                                pType.id=keyMap;
+                                pType.appendChild(document.createTextNode(keyMap));
+                                pType.onclick=function() { onPClick(this, queryTypes) };
+                            }
+                            indexArray.push(mappingArray);
+
+                        }
+                    }
+                }
+            }
+            xmlhttp.open("GET", "http://localhost:9200/_mapping", true);
+            xmlhttp.send();
+        }
+
+        function onPClick(obj, array) {
+            var idx = array.indexOf(obj.id);
+            if ( idx >= 0) {
+                array.splice(idx, 1);
+                obj.style.backgroundColor = colorUnselected;
+            } else {
+                array.push(obj.id);
+                obj.style.backgroundColor = colorSelected;
+            }
+            alert(array.toString());
+        }
+
+        function Search(keywords) {
+
+        }
+
+    </script>
+
+</head>
+<body  onload="loadIndexAndType()">
+    <table width="100%" cellpadding="10" align="center">
+        <tr>
+            <td colspan="3" style="background-color:#bbcccc" align="center">
+                <input size="100" type="text" name="keywords"  style="width:800px;height:30px"/>
+                <button id="search" style="height:30px">Search</button>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="background-color:#eedddd" width="20%" align="center">
+                Index and Type
+                <button onclick="loadIndexAndType()" >Reload</button>
+            </td>
+
+            <td style="background-color:#ddeedd" width="40%" align="center">
+                <p>Search Result</p>
+            </td>
+
+            <td style="background-color:#ddddee" width="40%" align="center">
+                <p>Token Analyser</p>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="background-color:#eedddd" >
+                <table id="tableIndexAndType" width="100%">
+                    <tr>
+                        <td width="50%"   align="center">
+                            <p>Index</p>
+                        </td>
+                        <td width="50%"  align="center">
+                            <p>Mapping</p>
+                        </td>
+                    </tr>
+
+                </table>
+
+                <table width="100%" cellpadding="5">
+
+                    <tr>
+                        <td colspan="2"  align="center">
+                            <p> Raw Index And Types</p>
+                        </td>
+                    </tr>
+
+                    <tr style="background-color:#ffffff">
+                        <td colspan="2">
+                            <p id="responsetext">nothing</p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+
+            <td style="background-color:#ddeedd">
+
+
+            </td>
+
+            <td style="background-color:#ddddee">
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="3" style="background-color:#bbbbbb;text-align:center">
+                Copyright Frank Su from UCAS
+            </td>
+        </tr>
+
+    </table>
+
+</body>
+</html>
